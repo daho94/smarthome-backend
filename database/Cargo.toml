@@ -1,0 +1,10 @@
+[package]
+name = "database"
+version = "0.1.0"
+authors = ["Daniel Holzner <danielholzner@gmx.de>"]
+edition = "2018"
+
+[dependencies]
+diesel = { version = "1.4", features = ["postgres", "r2d2"] }
+dotenv = "0.14"
+djangohashers = "1.0.1"
