@@ -1,9 +1,13 @@
 use database::*;
 use djangohashers::{make_password_with_algorithm, Algorithm::BCryptSHA256};
-use std::io::stdin;
+use std::{io::stdin, env};
+use crate::ConnectionPool;
+use dotenv::dotenv;
 
 fn main() {
-    let connection = establish_connection();
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let connection_pool = ConnectionPool::new(&database_url);
 
     let mut username = String::new();
     let mut password = String::new();
@@ -15,10 +19,6 @@ fn main() {
     println!("Enter a password for {}", username);
     stdin().read_line(&mut password).unwrap();
     let password = password.trim_end();
-    let user = create_user(
-        &connection,
-        username,
-        &make_password_with_algorithm(password, BCryptSHA256),
-    );
+    let user = connection_pool.create_user(&username, &make_password_with_algorithm(password, BCryptSHA256));
     println!("\nSaved user {} with id {}", username, user.id);
 }
