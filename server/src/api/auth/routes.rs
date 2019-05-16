@@ -1,12 +1,16 @@
 use actix::Addr;
 use actix_web::middleware::identity::Identity;
-use actix_web::{web, Error, HttpRequest, HttpResponse, Responder, ResponseError};
+use actix_web::{web, Error, HttpResponse, Responder, ResponseError};
 use futures::Future;
 
 use super::handler::{AuthData, LoggedUser};
 use super::utils::create_token;
+<<<<<<< HEAD
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
+=======
+
+>>>>>>> 4bd9e98251a412f3298666e2a9f34fa343ebef45
 
 pub fn login(
     auth_data: web::Json<AuthData>,

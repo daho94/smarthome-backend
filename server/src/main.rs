@@ -51,7 +51,7 @@ fn main() -> io::Result<()> {
     config.set_single_cert(cert_chain, keys.remove(0)).unwrap();
 
     // create server
-    let mut server = HttpServer::new(move || {
+    let server = HttpServer::new(move || {
         let secret: String = env::var("SECRET_KEY").unwrap_or_else(|_| "0123".repeat(8));
         let domain: String = env::var("DOMAIN").unwrap_or_else(|_| "localhost".to_string());
         App::new()
