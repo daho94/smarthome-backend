@@ -1,7 +1,7 @@
-use frank_jwt::{decode, encode, validate_signature, Algorithm};
-use chrono::{Duration, Local};
-use crate::models::{DbExecutor, SlimUser};
 use crate::errors::ServiceError;
+use crate::models::{DbExecutor, SlimUser};
+use chrono::{Duration, Local};
+use frank_jwt::{decode, encode, validate_signature, Algorithm};
 use serde_json::json;
 
 const ALGO: Algorithm = Algorithm::HS512;

@@ -4,10 +4,9 @@ use actix_web::{web, Error, HttpRequest, HttpResponse, Responder, ResponseError}
 use futures::Future;
 
 use super::handler::{AuthData, LoggedUser};
-use crate::models::DbExecutor;
 use super::utils::create_token;
 use crate::errors::ServiceError;
-
+use crate::models::DbExecutor;
 
 pub fn login(
     auth_data: web::Json<AuthData>,

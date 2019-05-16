@@ -1,8 +1,8 @@
 use actix::{Actor, SyncContext};
-use database::PgConnectionPool;
 use database::models::user::User;
+use database::{ConnectionPool, PgConnectionPool};
 
-pub struct DbExecutor(pub PgConnectionPool);
+pub struct DbExecutor(pub ConnectionPool);
 
 impl Actor for DbExecutor {
     type Context = SyncContext<Self>;
@@ -15,6 +15,16 @@ pub struct SlimUser {
 
 impl From<User> for SlimUser {
     fn from(user: User) -> Self {
-        SlimUser { username: user.username }
+        SlimUser {
+            username: user.username,
+        }
+    }
+}
+
+impl From<&User> for SlimUser {
+    fn from(user: &User) -> Self {
+        SlimUser {
+            username: user.username.clone(),
+        }
     }
 }

@@ -5,6 +5,8 @@ authors = ["Daniel Holzner <danielholzner@gmx.de>"]
 edition = "2018"
 
 [dependencies]
+log = "0.4"
 diesel = { version = "1.4", features = ["postgres", "r2d2"] }
+diesel_migrations = "1.4"
 dotenv = "0.14"
 djangohashers = "1.0.1"

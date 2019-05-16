@@ -1,6 +1,6 @@
+use crate::api::auth::routes::{get_me, login, logout};
 use actix_files as fs;
 use actix_web::web;
-use crate::api::auth::routes::{login, logout, get_me};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -9,7 +9,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                 .route(web::post().to_async(login))
                 .route(web::delete().to(logout))
                 .route(web::get().to_async(get_me)),
-        )
+        ),
     )
     //     .service(
     //         web::scope("/releasenotes/{name}")

@@ -1,8 +1,8 @@
+use actix::MailboxError;
 use actix_web::{error::ResponseError, HttpResponse};
 use derive_more::Display;
 use diesel::result::{DatabaseErrorKind, Error};
 use std::convert::From;
-use actix::MailboxError;
 // use uuid::ParseError;
 
 #[derive(Debug, Display)]
@@ -21,14 +21,11 @@ pub enum ServiceError {
 impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         match *self {
-            ServiceError::InternalServerError => HttpResponse::InternalServerError()
-                .json("Internal Server Error, Please try later"),
-            ServiceError::BadRequest(ref message) => {
-                HttpResponse::BadRequest().json(message)
+            ServiceError::InternalServerError => {
+                HttpResponse::InternalServerError().json("Internal Server Error, Please try later")
             }
-            ServiceError::Unauthorized => {
-                HttpResponse::Unauthorized().json("Unauthorized")
-            }
+            ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
+            ServiceError::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
         }
     }
 }
@@ -41,7 +38,7 @@ impl ResponseError for ServiceError {
 
 // impl From<MailboxError> for ServiceError {
 //     fn from(_: MailboxError) -> ServiceError {
-//         ServiceError::InternalServerError.json("Internal Server Error, Please try later")         
+//         ServiceError::InternalServerError.json("Internal Server Error, Please try later")
 //     }
 // }
 
@@ -60,8 +57,7 @@ impl From<Error> for ServiceError {
         match error {
             Error::DatabaseError(kind, info) => {
                 if let DatabaseErrorKind::UniqueViolation = kind {
-                    let message =
-                        info.details().unwrap_or_else(|| info.message()).to_string();
+                    let message = info.details().unwrap_or_else(|| info.message()).to_string();
                     return ServiceError::BadRequest(message);
                 }
                 ServiceError::InternalServerError

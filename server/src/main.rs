@@ -14,7 +14,8 @@ use actix_web::middleware::{
 };
 use actix_web::{App, HttpServer};
 use chrono::Duration;
-use database::create_connection_pool;
+use database::ConnectionPool;
+use dotenv::dotenv;
 use listenfd::ListenFd;
 use models::DbExecutor;
 use rustls::{
@@ -22,7 +23,6 @@ use rustls::{
     NoClientAuth, ServerConfig,
 };
 use std::{env, fs::File, io};
-use dotenv::dotenv;
 
 mod api;
 mod errors;
@@ -34,13 +34,13 @@ fn main() -> io::Result<()> {
     env_logger::init();
     let mut listenfd = ListenFd::from_env();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let sys = actix::System::new("Smarthome_Server");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    // create db connection pool
-    let pool = create_connection_pool(&database_url);
+    let connection_pool = ConnectionPool::new(&database_url);
 
-    let address: Addr<DbExecutor> = SyncArbiter::start(4, move || DbExecutor(pool.clone()));
+    let address: Addr<DbExecutor> =
+        SyncArbiter::start(4, move || DbExecutor(connection_pool.clone()));
 
     // load ssl keys
     let mut config = ServerConfig::new(NoClientAuth::new());
