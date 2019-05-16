@@ -1,6 +1,6 @@
 use database::*;
 use djangohashers::{make_password_with_algorithm, Algorithm::BCryptSHA256};
-use std::io::{stdin, Read};
+use std::io::stdin;
 
 fn main() {
     let connection = establish_connection();

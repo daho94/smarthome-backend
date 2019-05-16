@@ -1,6 +1,6 @@
 use frank_jwt::{decode, encode, validate_signature, Algorithm};
 use chrono::{Duration, Local};
-use crate::models::{DbExecutor, SlimUser};
+use crate::models::{SlimUser};
 use crate::errors::ServiceError;
 use serde_json::json;
 
