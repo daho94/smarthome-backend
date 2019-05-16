@@ -30,7 +30,6 @@ impl ResponseError for ServiceError {
     }
 }
 
-<<<<<<< HEAD
 // impl ResponseError for MailboxError {
 //     fn error_response(&self) -> HttpResponse {
 //         HttpResponse::InternalServerError().json("Internal Server Error, Please try later")
@@ -43,8 +42,6 @@ impl ResponseError for ServiceError {
 //     }
 // }
 
-=======
->>>>>>> 4bd9e98251a412f3298666e2a9f34fa343ebef45
 // we can return early in our handlers if UUID provided by the user is not valid
 // and provide a custom message
 // impl From<ParseError> for ServiceError {
