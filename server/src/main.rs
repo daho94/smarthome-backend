@@ -78,5 +78,4 @@ fn main() -> io::Result<()> {
     };
 
     sys.run()
-    // server.run()
 }

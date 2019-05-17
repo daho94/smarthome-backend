@@ -6,7 +6,6 @@ use actix_web::{middleware::identity::Identity, FromRequest};
 use crate::api::auth::utils::decode_token;
 use crate::errors::ServiceError;
 use crate::models::{DbExecutor, SlimUser};
-use database::actions::get_user;
 use djangohashers::check_password;
 
 #[derive(Debug, Deserialize)]
