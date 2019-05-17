@@ -1,8 +1,8 @@
+use crate::ConnectionPool;
 use database::*;
 use djangohashers::{make_password_with_algorithm, Algorithm::BCryptSHA256};
-use std::{io::stdin, env};
-use crate::ConnectionPool;
 use dotenv::dotenv;
+use std::{env, io::stdin};
 
 fn main() {
     dotenv().ok();
@@ -19,6 +19,9 @@ fn main() {
     println!("Enter a password for {}", username);
     stdin().read_line(&mut password).unwrap();
     let password = password.trim_end();
-    let user = connection_pool.create_user(&username, &make_password_with_algorithm(password, BCryptSHA256));
+    let user = connection_pool.create_user(
+        &username,
+        &make_password_with_algorithm(password, BCryptSHA256),
+    );
     println!("\nSaved user {} with id {}", username, user.id);
 }
