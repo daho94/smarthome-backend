@@ -9,12 +9,10 @@ pub mod actions;
 pub mod models;
 pub mod schema;
 
-use self::models::post::{NewPost, Post};
-use self::models::user::{NewUser, User};
+// use self::models::post::{NewPost, Post};
 
 use diesel::prelude::*;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
-use dotenv::dotenv;
 use std::env;
 
 pub type PgConnectionPool = Pool<ConnectionManager<PgConnection>>;
@@ -57,31 +55,15 @@ impl ConnectionPool {
         let conn = self.connection();
         diesel::sql_query(r#"SELECT 1"#).execute(&conn).is_ok()
     }
-    pub fn create_post(&self, title: &str, body: &str) -> Post {
-        use schema::posts;
+    // pub fn create_post(&self, title: &str, body: &str) -> Post {
+    //     use schema::posts;
 
-        let conn = self.connection();
-        let new_post = NewPost { title, body };
+    //     let conn = self.connection();
+    //     let new_post = NewPost { title, body };
 
-        diesel::insert_into(posts::table)
-            .values(&new_post)
-            .get_result(&conn)
-            .expect("Error saving new post")
-    }
-    pub fn create_user(&self, username: &str, password: &str) -> User {
-        use schema::users;
-
-        let conn = self.connection();
-        let new_user = NewUser { username, password };
-
-        diesel::insert_into(users::table)
-            .values(&new_user)
-            .get_result(&conn)
-            .expect("Error saving new user")
-    }
-    pub fn get_user(&self, name: &str) -> Result<User, diesel::result::Error> {
-        use crate::schema::users::dsl::*;
-        let conn = self.connection();
-        users.filter(username.eq(name)).first::<User>(&conn)
-    }
+    //     diesel::insert_into(posts::table)
+    //         .values(&new_post)
+    //         .get_result(&conn)
+    //         .expect("Error saving new post")
+    // }
 }
