@@ -69,12 +69,12 @@ fn main() -> io::Result<()> {
 
     // for development: enables auto reload :)
     if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
-        //tls server.listen_rustls(l, config).unwrap()
         println!("Autoreload enabled");
-        server.listen(l)?.start()
+        server.listen_rustls(l, config)?.start()
+        // server.listen(l)?.start()
     } else {
-        //tls server.bind_rustls("127.0.0.1:8082", config).unwrap()
-        server.bind("127.0.0.1:8082")?.start()
+        server.bind_rustls("127.0.0.1:8082", config)?.start()
+        // server.bind("127.0.0.1:8082")?.start()
     };
 
     sys.run()
