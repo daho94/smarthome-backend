@@ -1,7 +1,6 @@
 use actix::{Handler, Message};
 use actix_web::{dev::Payload, Error, HttpRequest};
 use actix_web::{middleware::identity::Identity, FromRequest};
-// use diesel::prelude::*;
 
 use crate::api::auth::utils::decode_token;
 use crate::errors::ServiceError;
@@ -22,13 +21,10 @@ impl Handler<AuthData> for DbExecutor {
     type Result = Result<SlimUser, ServiceError>;
     fn handle(&mut self, msg: AuthData, _: &mut Self::Context) -> Self::Result {
         if let Ok(user) = &self.0.get_user(&msg.username) {
-            match check_password(&msg.password, &user.password) {
-                Ok(matching) => {
-                    if matching {
-                        return Ok(user.into());
-                    }
+            if let Ok(matching) = check_password(&msg.password, &user.password) {
+                if matching {
+                    return Ok(user.into());
                 }
-                Err(_) => (),
             }
         }
         Err(ServiceError::BadRequest(

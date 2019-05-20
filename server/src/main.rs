@@ -53,7 +53,7 @@ fn main() -> io::Result<()> {
     // create server
     let server = HttpServer::new(move || {
         let secret: String = env::var("SECRET_KEY").unwrap_or_else(|_| "0123".repeat(8));
-        let domain: String = env::var("DOMAIN").unwrap_or_else(|_| "localhost".to_string());
+        let _domain: String = env::var("DOMAIN").unwrap_or_else(|_| "localhost".to_string());
         App::new()
             .data(address.clone())
             .wrap(Logger::default())
@@ -71,7 +71,7 @@ fn main() -> io::Result<()> {
     if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         println!("Autoreload enabled");
         server.listen_rustls(l, config)?.start()
-        // server.listen(l)?.start()
+    // server.listen(l)?.start()
     } else {
         server.bind_rustls("127.0.0.1:8082", config)?.start()
         // server.bind("127.0.0.1:8082")?.start()

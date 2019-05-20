@@ -1,9 +1,7 @@
-use actix::MailboxError;
 use actix_web::{error::ResponseError, HttpResponse};
 use derive_more::Display;
 use diesel::result::{DatabaseErrorKind, Error};
 use std::convert::From;
-// use uuid::ParseError;
 
 #[derive(Debug, Display)]
 pub enum ServiceError {
@@ -29,26 +27,6 @@ impl ResponseError for ServiceError {
         }
     }
 }
-
-// impl ResponseError for MailboxError {
-//     fn error_response(&self) -> HttpResponse {
-//         HttpResponse::InternalServerError().json("Internal Server Error, Please try later")
-//     }
-// }
-
-// impl From<MailboxError> for ServiceError {
-//     fn from(_: MailboxError) -> ServiceError {
-//         ServiceError::InternalServerError.json("Internal Server Error, Please try later")
-//     }
-// }
-
-// we can return early in our handlers if UUID provided by the user is not valid
-// and provide a custom message
-// impl From<ParseError> for ServiceError {
-//     fn from(_: ParseError) -> ServiceError {
-//         ServiceError::BadRequest("Invalid UUID".into())
-//     }
-// }
 
 impl From<Error> for ServiceError {
     fn from(error: Error) -> ServiceError {

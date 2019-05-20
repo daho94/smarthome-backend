@@ -43,10 +43,4 @@ table! {
 joinable!(dashboards -> users (user_id));
 joinable!(widgets -> categories (category_id));
 
-allow_tables_to_appear_in_same_query!(
-    categories,
-    dashboards,
-    posts,
-    users,
-    widgets,
-);
+allow_tables_to_appear_in_same_query!(categories, dashboards, posts, users, widgets,);

@@ -5,7 +5,6 @@ use futures::Future;
 
 use super::handler::{AuthData, LoggedUser};
 use super::utils::create_token;
-use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 
 pub fn login(

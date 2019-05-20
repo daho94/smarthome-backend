@@ -1,6 +1,7 @@
 use actix::{Actor, SyncContext};
+pub use database::models::dashboard::Dashboard;
 use database::models::user::User;
-use database::{ConnectionPool, PgConnectionPool};
+use database::ConnectionPool;
 
 pub struct DbExecutor(pub ConnectionPool);
 
