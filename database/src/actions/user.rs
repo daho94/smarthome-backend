@@ -1,8 +1,7 @@
+use crate::actions::Result;
 use crate::models::user::*;
 use crate::ConnectionPool;
 use diesel::prelude::*;
-use crate::actions::Result;
-
 
 impl ConnectionPool {
     pub fn get_user(&self, name: &str) -> Result<User> {
@@ -22,5 +21,5 @@ impl ConnectionPool {
             .values(&new_user)
             .get_result(&conn)
             .expect("Error saving new user")
-    }    
+    }
 }
