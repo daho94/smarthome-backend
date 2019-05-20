@@ -1,8 +1,8 @@
+use super::user::User;
 use crate::schema::dashboards;
 use serde_json::Value;
-use super::user::User;
 
-#[derive(Identifiable, Associations, Queryable, PartialEq, Debug, Deserialize)]
+#[derive(Identifiable, Associations, Queryable, PartialEq, Debug, Deserialize, Serialize)]
 #[belongs_to(User)]
 #[table_name = "dashboards"]
 pub struct Dashboard {

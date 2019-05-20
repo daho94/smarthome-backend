@@ -1,9 +1,9 @@
+use crate::models::user::User;
 use crate::ConnectionPool;
 use database::*;
 use dotenv::dotenv;
-use std::env;
-use crate::models::user::User;
 use serde_json::Value;
+use std::env;
 
 fn main() {
     dotenv().ok();
