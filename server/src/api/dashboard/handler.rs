@@ -26,6 +26,6 @@ impl Handler<GetDashboards> for DbExecutor {
         self.0
             .get_user(&msg.username)
             .and_then(|user| self.0.get_dashboards_for_user(&user))
-            .map_err(|_e| ServiceError::BadRequest("Username and Password don't match".into()))
+            .map_err(|_e| ServiceError::InternalServerError)
     }
 }
