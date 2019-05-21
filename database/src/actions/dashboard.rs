@@ -5,18 +5,31 @@ use diesel::prelude::*;
 use serde_json::Value;
 
 impl ConnectionPool {
-    pub fn get_dashboard_for_user(&self, dashboard_name: &str, user: &User) -> Result<Dashboard> {
+    pub fn get_dashboard_for_user(&self, dashboard_id: i32, user: &User) -> Result<Dashboard> {
         use crate::schema::dashboards::dsl::*;
 
         let conn = self.connection();
         Dashboard::belonging_to(user)
-            .filter(name.eq(dashboard_name))
+            .filter(id.eq(dashboard_id))
             .first::<Dashboard>(&conn)
     }
 
-    pub fn get_dashboards_for_user(&self, user: &User) -> Result<Vec<Dashboard>> {
+    pub fn get_default_dashboard_for_user(&self, user: &User) -> Result<Dashboard> {
+        use crate::schema::dashboards::dsl::*;
+
         let conn = self.connection();
-        Dashboard::belonging_to(user).load::<Dashboard>(&conn)
+        Dashboard::belonging_to(user)
+            .filter(default_dashboard.eq(true))
+            .first::<Dashboard>(&conn)
+    }
+
+    pub fn get_dashboards_for_user(&self, user: &User) -> Result<Vec<(i32, String, bool)>> {
+        use crate::schema::dashboards::dsl::*;
+
+        let conn = self.connection();
+        Dashboard::belonging_to(user)
+            .select((id, name, default_dashboard))
+            .load::<(i32, String, bool)>(&conn)
     }
 
     pub fn create_dashboard_for_user(

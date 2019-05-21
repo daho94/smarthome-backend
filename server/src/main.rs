@@ -73,7 +73,7 @@ fn main() -> io::Result<()> {
         server.listen_rustls(l, config)?.start()
     // server.listen(l)?.start()
     } else {
-        server.bind_rustls("127.0.0.1:8082", config)?.start()
+        server.bind_rustls("127.0.0.1:3000", config)?.start()
         // server.bind("127.0.0.1:8082")?.start()
     };
 
