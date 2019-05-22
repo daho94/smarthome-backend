@@ -18,7 +18,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                     .service(
                         web::resource("/single")
                             .route(web::post().to_async(get_dashboard))
-                            .route(web::get().to_async(get_default_dashboard)),
+                            .route(web::get().to_async(get_default_dashboard))
+                            .route(web::put().to_async(save_dashboard))
                     ),
             ),
     )

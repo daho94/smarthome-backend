@@ -1,4 +1,4 @@
-use super::handler::{DashboardData, GetDashboard, GetDashboards, GetDefaultDashboard};
+use super::handler::{DashboardData, GetDashboard, GetDashboards, GetDefaultDashboard, SaveDashboard, DashboardSettings};
 use crate::api::auth::handler::LoggedUser;
 use crate::models::DbExecutor;
 use actix::Addr;
@@ -43,6 +43,23 @@ pub fn get_default_dashboard(
     .from_err()
     .and_then(move |res| match res {
         Ok(dashboard) => Ok(HttpResponse::Ok().json(dashboard)),
+        Err(e) => Ok(e.error_response()),
+    })
+}
+
+pub fn save_dashboard(
+    logged_user: LoggedUser,
+    dashboard_data: web::Json<DashboardSettings>,
+    db: web::Data<Addr<DbExecutor>>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+     db.send(SaveDashboard {
+         username: logged_user.username,
+         id: dashboard_data.id,
+         new_settings: dashboard_data.settings.clone(),
+     })
+    .from_err()
+    .and_then(move |res| match res {
+        Ok(_) => Ok(HttpResponse::Ok().into()),
         Err(e) => Ok(e.error_response()),
     })
 }

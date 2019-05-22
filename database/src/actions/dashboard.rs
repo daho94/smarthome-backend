@@ -57,7 +57,7 @@ impl ConnectionPool {
     pub fn save_dashboard_for_user(
         &self,
         user: &User,
-        dashboard_name: &str,
+        dashboard_id: i32,
         new_settings: &Value,
     ) -> Dashboard {
         use crate::schema::dashboards;
@@ -68,7 +68,7 @@ impl ConnectionPool {
         diesel::update(
             dashboards::table
                 .filter(user_id.eq(user.id))
-                .filter(name.eq(dashboard_name)),
+                .filter(id.eq(dashboard_id)),
         )
         .set(settings.eq(new_settings))
         .get_result(&conn)
