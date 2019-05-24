@@ -1,4 +1,3 @@
-// extern crate actix_web;
 extern crate actix;
 extern crate listenfd;
 #[macro_use]
@@ -32,7 +31,7 @@ fn main() -> io::Result<()> {
     dotenv().ok();
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
-    let mut listenfd = ListenFd::from_env();
+    let mut listenfd = ListenFd::from_env(); //for development only
 
     let sys = actix::System::new("Smarthome_Server");
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -62,7 +61,7 @@ fn main() -> io::Result<()> {
                     .name("auth")
                     .path("/")
                     .max_age(Duration::weeks(1).num_seconds())
-                    .secure(false), // change to true if tls enabled
+                    .secure(true), // change to true if tls enabled
             ))
             .configure(app::config)
     });
