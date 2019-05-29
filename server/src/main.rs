@@ -36,10 +36,11 @@ fn main() -> io::Result<()> {
     let sys = actix::System::new("Smarthome_Server");
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let connection_pool = ConnectionPool::new(&database_url);
+    let pool = ConnectionPool::new(&database_url);
 
+    let h_pool = pool.clone();
     let address: Addr<DbExecutor> =
-        SyncArbiter::start(4, move || DbExecutor(connection_pool.clone()));
+        SyncArbiter::start(4, move || DbExecutor(h_pool.clone()));
 
     // load ssl keys
     let mut config = ServerConfig::new(NoClientAuth::new());
@@ -54,6 +55,7 @@ fn main() -> io::Result<()> {
         let secret: String = env::var("SECRET_KEY").unwrap_or_else(|_| "0123".repeat(8));
         let _domain: String = env::var("DOMAIN").unwrap_or_else(|_| "localhost".to_string());
         App::new()
+            .data(pool.clone())
             .data(address.clone())
             .wrap(Logger::default())
             .wrap(IdentityService::new(

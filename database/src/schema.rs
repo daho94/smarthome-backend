@@ -37,6 +37,7 @@ table! {
         id -> Int4,
         category_id -> Int4,
         name -> Varchar,
+        component_key -> Varchar,
     }
 }
 

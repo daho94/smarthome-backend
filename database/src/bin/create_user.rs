@@ -12,7 +12,7 @@ fn main() {
     let mut username = String::new();
     let mut password = String::new();
 
-    println!("Enter youe username!");
+    println!("Enter your username!");
     stdin().read_line(&mut username).unwrap();
     let username = username.trim_end(); // Remove the trailing newline
 

@@ -1,5 +1,6 @@
 use crate::api::auth::routes::{get_me, login, logout};
 use crate::api::dashboard::routes::*;
+use crate::api::widget::routes::*;
 use actix_files as fs;
 use actix_web::web;
 
@@ -21,7 +22,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                             .route(web::get().to_async(get_default_dashboard))
                             .route(web::put().to_async(save_dashboard))
                     ),
-            ),
+            )
+            .service(
+                web::resource("/widget/all")
+                    .route(web::get().to_async(get_widgets))
+            )
     )
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
 }
