@@ -1,13 +1,5 @@
-use actix::{Actor, SyncContext};
 pub use database::models::dashboard::Dashboard;
 use database::models::user::User;
-use database::ConnectionPool;
-
-pub struct DbExecutor(pub ConnectionPool);
-
-impl Actor for DbExecutor {
-    type Context = SyncContext<Self>;
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SlimUser {

@@ -15,5 +15,8 @@ fn main() {
     let cat_name = cat_name.trim_end(); // Remove the trailing newline
 
     let category = connection_pool.create_category(&cat_name);
-    println!("\nSaved new category with name {} and id {}", cat_name, category.id);
+    println!(
+        "\nSaved new category with name {} and id {}",
+        cat_name, category.id
+    );
 }

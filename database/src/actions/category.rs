@@ -1,10 +1,9 @@
-use crate::models::{category::*};
+use crate::actions::Result;
+use crate::models::category::*;
 use crate::ConnectionPool;
 use diesel::prelude::*;
-use crate::actions::Result;
 
-
-impl ConnectionPool {    
+impl ConnectionPool {
     pub fn create_category(&self, name: &str) -> Category {
         use crate::schema::categories;
 
@@ -21,7 +20,8 @@ impl ConnectionPool {
         use crate::schema::categories::dsl::*;
 
         let conn = self.connection();
-        categories.filter(name.eq(category_name)).first::<Category>(&conn)
+        categories
+            .filter(name.eq(category_name))
+            .first::<Category>(&conn)
     }
-} 
- 
+}

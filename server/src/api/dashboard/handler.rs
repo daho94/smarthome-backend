@@ -1,8 +1,8 @@
 use crate::models::Dashboard;
-use serde_json::Value;
-use database::ConnectionPool;
 use actix_web::web;
+use database::ConnectionPool;
 use diesel::result::Error;
+use serde_json::Value;
 
 #[derive(Debug, Serialize)]
 pub struct DashboardMeta {
@@ -21,9 +21,11 @@ impl From<Dashboard> for DashboardMeta {
     }
 }
 
-pub fn get_dashboards_for_user(pool: web::Data<ConnectionPool>, username: &str) -> Result<Vec<DashboardMeta>, Error> {
-    pool            
-        .get_user(username)
+pub fn get_dashboards_for_user(
+    pool: web::Data<ConnectionPool>,
+    username: &str,
+) -> Result<Vec<DashboardMeta>, Error> {
+    pool.get_user(username)
         .and_then(|user| pool.get_dashboards_for_user(&user))
         .and_then(|dashboards| {
             Ok(dashboards
@@ -42,15 +44,20 @@ pub struct DashboardData {
     pub id: i32,
 }
 
-pub fn get_dashboard_by_id(pool: web::Data<ConnectionPool>, dashboard_id: i32, username: &str) -> Result<Dashboard, Error> {
-    pool
-        .get_user(username)
+pub fn get_dashboard_by_id(
+    pool: web::Data<ConnectionPool>,
+    dashboard_id: i32,
+    username: &str,
+) -> Result<Dashboard, Error> {
+    pool.get_user(username)
         .and_then(|user| pool.get_dashboard_for_user(dashboard_id, &user))
 }
 
-pub fn get_default_dashboard_for_user(pool: web::Data<ConnectionPool>, username: &str) -> Result<DashboardMeta, Error> {
-    pool
-        .get_user(username)
+pub fn get_default_dashboard_for_user(
+    pool: web::Data<ConnectionPool>,
+    username: &str,
+) -> Result<DashboardMeta, Error> {
+    pool.get_user(username)
         .and_then(|user| pool.get_default_dashboard_for_user(&user))
         .and_then(|dashboard| Ok(dashboard.into()))
 }
@@ -61,8 +68,14 @@ pub struct DashboardSettings {
     pub settings: Value,
 }
 
-pub fn save_dashboard_for_user(pool: web::Data<ConnectionPool>, msg: &DashboardSettings, username: &str) -> Result<DashboardMeta, Error> {
-    pool
-        .get_user(username)
-        .and_then(|user| Ok(pool.save_dashboard_for_user(&user, msg.id, &msg.settings).into()))
+pub fn save_dashboard_for_user(
+    pool: web::Data<ConnectionPool>,
+    msg: &DashboardSettings,
+    username: &str,
+) -> Result<DashboardMeta, Error> {
+    pool.get_user(username).and_then(|user| {
+        Ok(pool
+            .save_dashboard_for_user(&user, msg.id, &msg.settings)
+            .into())
+    })
 }

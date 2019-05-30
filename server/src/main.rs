@@ -6,7 +6,6 @@ extern crate serde_derive;
 mod app;
 mod models;
 
-use actix::prelude::*;
 use actix_web::middleware::{
     identity::{CookieIdentityPolicy, IdentityService},
     Logger,
@@ -16,7 +15,6 @@ use chrono::Duration;
 use database::ConnectionPool;
 use dotenv::dotenv;
 use listenfd::ListenFd;
-use models::DbExecutor;
 use rustls::{
     internal::pemfile::{certs, rsa_private_keys},
     NoClientAuth, ServerConfig,
@@ -36,11 +34,8 @@ fn main() -> io::Result<()> {
     let sys = actix::System::new("Smarthome_Server");
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
+    // create connection pool
     let pool = ConnectionPool::new(&database_url);
-
-    let h_pool = pool.clone();
-    let address: Addr<DbExecutor> =
-        SyncArbiter::start(4, move || DbExecutor(h_pool.clone()));
 
     // load ssl keys
     let mut config = ServerConfig::new(NoClientAuth::new());
@@ -56,14 +51,13 @@ fn main() -> io::Result<()> {
         let _domain: String = env::var("DOMAIN").unwrap_or_else(|_| "localhost".to_string());
         App::new()
             .data(pool.clone())
-            .data(address.clone())
             .wrap(Logger::default())
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(secret.as_bytes())
                     .name("auth")
                     .path("/")
                     .max_age(Duration::weeks(1).num_seconds())
-                    .secure(true), // change to true if tls enabled
+                    .secure(true),
             ))
             .configure(app::config)
     });

@@ -1,7 +1,7 @@
-use crate::schema::widgets;
 use super::category::Category;
+use crate::schema::widgets;
 
-#[derive(Identifiable,Associations ,Queryable, PartialEq, Debug, Serialize)]
+#[derive(Identifiable, Associations, Queryable, PartialEq, Debug, Serialize)]
 #[belongs_to(Category)]
 #[table_name = "widgets"]
 pub struct Widget {
@@ -17,5 +17,4 @@ pub struct NewWidget<'a> {
     pub category_id: i32,
     pub name: &'a str,
     pub component_key: &'a str,
-
 }

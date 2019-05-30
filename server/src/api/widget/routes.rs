@@ -1,7 +1,7 @@
 use super::handler::get_widgets_grouped;
 use crate::api::auth::handler::LoggedUser;
-use database::ConnectionPool;
 use actix_web::{web, Error, HttpResponse, ResponseError};
+use database::ConnectionPool;
 use futures::Future;
 
 pub fn get_widgets(

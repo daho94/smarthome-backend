@@ -25,8 +25,12 @@ fn main() {
     let category_name = category_name.trim_end();
 
     if let Ok(category) = connection_pool.get_category(&category_name) {
-        let widget = connection_pool.create_widget_for_category(&widget_name, &component_key, &category);
-        println!("\nSaved new widget with name {} and id {}", widget_name, widget.id);
+        let widget =
+            connection_pool.create_widget_for_category(&widget_name, &component_key, &category);
+        println!(
+            "\nSaved new widget with name {} and id {}",
+            widget_name, widget.id
+        );
     } else {
         println!("Category does not exist! Go agane");
     }
