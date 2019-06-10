@@ -41,7 +41,28 @@ table! {
     }
 }
 
+table! {
+    datapoints (id) {
+        id -> Int4,
+        name -> Varchar,
+        #[sql_name = "type"]
+        data_type -> Int4,
+    }
+}
+
+table! {
+    ts_number (id) {
+        id -> Int4,
+        ts -> BigInt,
+        val -> Float4,
+        ack -> Bool,
+        _from -> Int4,
+        q -> Int4,
+    }
+}
+
 joinable!(dashboards -> users (user_id));
 joinable!(widgets -> categories (category_id));
 
 allow_tables_to_appear_in_same_query!(categories, dashboards, posts, users, widgets,);
+allow_tables_to_appear_in_same_query!(datapoints, ts_number,);
