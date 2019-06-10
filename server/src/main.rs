@@ -61,7 +61,7 @@ fn main() -> io::Result<()> {
             ))
             .configure(app::config)
     });
-
+    
     // for development: enables auto reload :)
     if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         println!("Autoreload enabled");

@@ -1,5 +1,6 @@
 use crate::api::auth::routes::{get_me, login, logout};
 use crate::api::dashboard::routes::*;
+use crate::api::iobroker::routes::*;
 use crate::api::widget::routes::*;
 use actix_files as fs;
 use actix_web::web;
@@ -13,6 +14,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                     .route(web::delete().to(logout))
                     .route(web::get().to_async(get_me)),
             )
+            .service(web::resource("/iobroker").route(web::post().to_async(get_datapoints)))
             .service(
                 web::scope("/dashboard")
                     .service(web::resource("/all").route(web::get().to_async(get_dashboards)))
