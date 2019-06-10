@@ -37,6 +37,7 @@ impl ConnectionPool {
         user: &User,
         dashboard_name: &str,
         settings: &Value,
+        is_default: bool,
     ) -> Dashboard {
         use crate::schema::dashboards;
 
@@ -44,7 +45,7 @@ impl ConnectionPool {
         let new_dashboard = NewDashboard {
             user_id: user.id,
             name: dashboard_name,
-            default_dashboard: false,
+            default_dashboard: is_default,
             settings,
         };
 

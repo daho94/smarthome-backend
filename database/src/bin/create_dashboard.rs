@@ -1,84 +1,52 @@
+use crate::models::dashboard::Dashboard;
 use crate::models::user::User;
 use crate::ConnectionPool;
 use database::*;
 use dotenv::dotenv;
 use serde_json::Value;
-use std::env;
+use std::{env, io::stdin};
 
 fn main() {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let connection_pool = ConnectionPool::new(&database_url);
 
-    let user = User {
-        id: 6,
-        username: "top".into(),
-        password: "IDC".into(),
+    let mut username = String::new();
+    let mut dashboard_name = String::new();
+    let mut is_default = String::new();
+
+    println!("Enter username");
+    stdin().read_line(&mut username).unwrap();
+    let username = username.trim_end();
+
+    println!("Enter dashboard name");
+    stdin().read_line(&mut dashboard_name).unwrap();
+    let dashboard_name = dashboard_name.trim_end();
+
+    println!("Should this dashboard be your default dashboard? (y/n)");
+    stdin().read_line(&mut is_default).unwrap();
+    let is_default = match is_default.trim_end() {
+        "y" | "Y" => true,
+        "n" | "N" => false,
+        _ => false,
     };
 
-    let settings = r#"
-        [
-            {
-                "x": 0,
-                "y": 0,
-                "w": 2,
-                "h": 2,
-                "i": "0a997649-7af4-44e2-bdcd-4a100353b735",
-                "c": "SocketWidget",
-                "settings": {
-                "title": {
-                    "val": "CPU Temp",
-                    "type": "input"
-                },
-                "showTitle": {
-                    "val": true,
-                    "type": "checkbox"
-                }
-                },
-                "moved": false
-            },
-            {
-                "x": 2,
-                "y": 0,
-                "w": 2,
-                "h": 4,
-                "i": "ab9df151-6070-465a-bf79-92698150c705",
-                "c": "SocketWidget",
-                "settings": {
-                "title": {
-                    "val": "CPU Temp",
-                    "type": "input"
-                },
-                "showTitle": {
-                    "val": true,
-                    "type": "checkbox"
-                }
-                },
-                "moved": false
-            },
-            {
-                "x": 4,
-                "y": 0,
-                "w": 2,
-                "h": 5,
-                "i": "b437c117-9f35-44ce-b544-bd1e83150f16",
-                "c": "SocketWidget",
-                "settings": {
-                "title": {
-                    "val": "CPU Temp",
-                    "type": "input"
-                },
-                "showTitle": {
-                    "val": true,
-                    "type": "checkbox"
-                }
-                },
-                "moved": false
-            }
-        ]"#;
+    if let Ok(user) = connection_pool.get_user(&username) {
+        let settings = r#"[]"#;
 
-    // Parse the string of data into serde_json::Value.
-    let settings: Value = serde_json::from_str(settings).expect("Failed to parse JSON input");
-
-    connection_pool.create_dashboard_for_user(&user, &"blabla".to_string(), &settings);
+        // Parse the string of data into serde_json::Value.
+        let settings: Value = serde_json::from_str(settings).expect("Failed to parse JSON input");
+        let dashboard = connection_pool.create_dashboard_for_user(
+            &user,
+            &dashboard_name,
+            &settings,
+            is_default,
+        );
+        println!(
+            "Saved new dashboard with name {} and id {}",
+            dashboard.name, dashboard.id
+        );
+    } else {
+        println!("User with name '{}' does not exist", username);
+    }
 }
