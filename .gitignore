@@ -4,3 +4,5 @@
 /server/web
 /server/target
 /database/target
+/server/.env
+/database/.env
