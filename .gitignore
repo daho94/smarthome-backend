@@ -2,3 +2,5 @@
 **/*.rs.bk
 .env
 /server/web
+/server/target
+/database/target
