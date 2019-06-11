@@ -18,8 +18,8 @@ impl ConnectionPool {
             .inner_join(ts_number::ts_number.on(ts_number::id.eq(id)))
             .select((ts_number::ts, ts_number::val))
             .filter(name.eq(datapoint_name))
-            // get last 24 hours
             .filter(ts_number::ts.between(from, to))
+            .order(ts_number::ts.asc())
             .load(&conn)
     }
 }
