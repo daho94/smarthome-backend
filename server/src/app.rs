@@ -1,4 +1,4 @@
-use crate::api::auth::routes::{get_me, login, logout};
+use crate::api::auth::routes::*;
 use crate::api::dashboard::routes::*;
 use crate::api::iobroker::routes::*;
 use crate::api::widget::routes::*;
