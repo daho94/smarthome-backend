@@ -11,6 +11,7 @@ fn main() {
     let mut widget_name = String::new();
     let mut component_key = String::new();
     let mut category_name = String::new();
+    let mut icon_name = String::new();
 
     println!("Enter new widget name");
     stdin().read_line(&mut widget_name).unwrap();
@@ -24,14 +25,22 @@ fn main() {
     stdin().read_line(&mut category_name).unwrap();
     let category_name = category_name.trim_end();
 
+    println!("Enter icon");
+    stdin().read_line(&mut icon_name).unwrap();
+    let icon_name = icon_name.trim_end();
+
     if let Ok(category) = connection_pool.get_category(&category_name) {
-        let widget =
-            connection_pool.create_widget_for_category(&widget_name, &component_key, &category);
+        let widget = connection_pool.create_widget_for_category(
+            &widget_name,
+            &component_key,
+            &category,
+            &icon_name,
+        );
         println!(
             "\nSaved new widget with name {} and id {}",
             widget_name, widget.id
         );
     } else {
-        println!("Category does not exist! Go agane");
+        println!("Category does not exist!");
     }
 }

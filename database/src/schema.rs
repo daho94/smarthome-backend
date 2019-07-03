@@ -38,6 +38,7 @@ table! {
         category_id -> Int4,
         name -> Varchar,
         component_key -> Varchar,
+        icon -> Varchar,
     }
 }
 

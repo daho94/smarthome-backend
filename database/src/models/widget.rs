@@ -9,6 +9,7 @@ pub struct Widget {
     pub category_id: i32,
     pub name: String,
     pub component_key: String,
+    pub icon: String,
 }
 
 #[derive(Insertable, Debug)]
@@ -17,4 +18,5 @@ pub struct NewWidget<'a> {
     pub category_id: i32,
     pub name: &'a str,
     pub component_key: &'a str,
+    pub icon: &'a str,
 }

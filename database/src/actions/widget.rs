@@ -23,6 +23,7 @@ impl ConnectionPool {
         widget_name: &str,
         component_key: &str,
         category: &Category,
+        icon: &str,
     ) -> Widget {
         use crate::schema::widgets;
 
@@ -31,6 +32,7 @@ impl ConnectionPool {
             name: widget_name,
             component_key,
             category_id: category.id,
+            icon,
         };
 
         diesel::insert_into(widgets::table)
