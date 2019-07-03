@@ -1,9 +1,10 @@
 use crate::api::auth::utils::decode_token;
 use crate::errors::ServiceError;
 use crate::models::SlimUser;
+use actix_identity::Identity;
 use actix_web::web;
+use actix_web::FromRequest;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{middleware::identity::Identity, FromRequest};
 use database::ConnectionPool;
 use djangohashers::check_password;
 

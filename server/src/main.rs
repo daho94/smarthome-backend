@@ -6,10 +6,8 @@ extern crate serde_derive;
 mod app;
 mod models;
 
-use actix_web::middleware::{
-    identity::{CookieIdentityPolicy, IdentityService},
-    Logger,
-};
+use actix_identity::{CookieIdentityPolicy, IdentityService};
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use chrono::Duration;
 use database::ConnectionPool;
@@ -61,7 +59,7 @@ fn main() -> io::Result<()> {
             ))
             .configure(app::config)
     });
-    
+
     // for development: enables auto reload :)
     if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         println!("Autoreload enabled");
