@@ -27,6 +27,6 @@ pub fn get_datapoint_history_availability(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     web::block(move || has_datapoint_history(pool, &state.name)).then(|res| match res {
         Ok(av) => Ok(HttpResponse::Ok().json(av)),
-        Err(e) => Ok(HttpResponse::Ok().json(HistoryAvailability { has_history: false })),
+        Err(_) => Ok(HttpResponse::Ok().json(HistoryAvailability { has_history: false })),
     })
 }
