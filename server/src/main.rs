@@ -1,20 +1,15 @@
 extern crate actix;
-extern crate listenfd;
 #[macro_use]
 extern crate serde_derive;
 
 mod app;
 mod models;
-
-use actix_web::middleware::{
-    identity::{CookieIdentityPolicy, IdentityService},
-    Logger,
-};
+use actix_identity::{CookieIdentityPolicy, IdentityService};
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use chrono::Duration;
 use database::ConnectionPool;
 use dotenv::dotenv;
-use listenfd::ListenFd;
 use rustls::{
     internal::pemfile::{certs, rsa_private_keys},
     NoClientAuth, ServerConfig,
@@ -29,8 +24,6 @@ fn main() -> io::Result<()> {
     dotenv().ok();
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
-    let mut listenfd = ListenFd::from_env(); //for development only
-
     let sys = actix::System::new("Smarthome_Server");
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
@@ -61,16 +54,9 @@ fn main() -> io::Result<()> {
             ))
             .configure(app::config)
     });
-    
-    // for development: enables auto reload :)
-    if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
-        println!("Autoreload enabled");
-        server.listen_rustls(l, config)?.start()
-    // server.listen(l)?.start()
-    } else {
-        server.bind_rustls("127.0.0.1:3000", config)?.start()
-        // server.bind("127.0.0.1:8082")?.start()
-    };
+
+
+    server.bind_rustls("127.0.0.1:3000", config)?.start();
 
     sys.run()
 }

@@ -3,9 +3,10 @@ use crate::errors::ServiceError;
 use crate::models::SlimUser;
 use actix_web::web;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{middleware::identity::Identity, FromRequest};
+use actix_web::FromRequest;
+use actix_identity::Identity;
 use database::ConnectionPool;
-use djangohashers::check_password;
+use bcrypt::{verify};
 
 #[derive(Debug, Deserialize)]
 pub struct AuthData {
@@ -18,7 +19,7 @@ pub fn login_user(
     auth_data: &AuthData,
 ) -> Result<SlimUser, ServiceError> {
     if let Ok(user) = pool.get_user(&auth_data.username) {
-        if let Ok(matching) = check_password(&auth_data.password, &user.password) {
+        if let Ok(matching) = verify(&auth_data.password, &user.password) {
             if matching {
                 return Ok(user.into());
             }

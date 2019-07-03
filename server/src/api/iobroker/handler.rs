@@ -5,6 +5,30 @@ use diesel::result::Error;
 #[derive(Debug, Deserialize)]
 pub struct IobrokerState {
     pub name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct HistoryAvailability {
+    pub has_history: bool,
+}
+
+pub fn has_datapoint_history(
+    pool: web::Data<ConnectionPool>,
+    name: &str,
+) -> Result<HistoryAvailability, Error> {
+    let availability = match pool.get_datapoint(name) {
+        Ok(_) => true,
+        Err(_) => false,
+    };
+    
+    Ok(HistoryAvailability {
+        has_history: availability,
+    })
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IobrokerStateHistory {
+    pub name: String,
     pub from: i64,
     pub to: i64,
 }

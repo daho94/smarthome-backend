@@ -3,3 +3,7 @@ members = [
     "database",
     "server"
 ]
+
+[profile.release]
+lto= true
+opt-level= 3

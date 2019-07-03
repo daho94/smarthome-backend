@@ -1,6 +1,6 @@
 use super::handler::{login_user, AuthData, LoggedUser};
 use super::utils::create_token;
-use actix_web::middleware::identity::Identity;
+use actix_identity::Identity;
 use actix_web::{web, Error, HttpResponse, Responder, ResponseError};
 use database::ConnectionPool;
 use futures::Future;

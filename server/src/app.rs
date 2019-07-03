@@ -16,6 +16,16 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             )
             .service(web::resource("/iobroker").route(web::post().to_async(get_datapoints)))
             .service(
+                web::scope("/iobroker")
+                    .service(
+                        web::resource("/datapoints").route(web::post().to_async(get_datapoints)),
+                    )
+                    .service(
+                        web::resource("/history")
+                            .route(web::post().to_async(get_datapoint_history_availability)),
+                    ),
+            )
+            .service(
                 web::scope("/dashboard")
                     .service(web::resource("/all").route(web::get().to_async(get_dashboards)))
                     .service(

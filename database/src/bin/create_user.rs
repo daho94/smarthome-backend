@@ -1,6 +1,7 @@
 use crate::ConnectionPool;
 use database::*;
-use djangohashers::{make_password_with_algorithm, Algorithm::BCryptSHA256};
+// use djangohashers::{make_password_with_algorithm, Algorithm::BCryptSHA256};
+use bcrypt::{DEFAULT_COST, hash};
 use dotenv::dotenv;
 use std::{env, io::stdin};
 
@@ -21,7 +22,7 @@ fn main() {
     let password = password.trim_end();
     let user = connection_pool.create_user(
         &username,
-        &make_password_with_algorithm(password, BCryptSHA256),
+        &hash(password,  DEFAULT_COST).expect("Couldn't hash passord"),
     );
     println!("\nSaved user {} with id {}", username, user.id);
 }
