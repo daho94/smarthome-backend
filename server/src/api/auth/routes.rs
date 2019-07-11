@@ -1,29 +1,23 @@
-use actix::Addr;
-use actix_web::middleware::identity::Identity;
-use actix_web::{web, Error, HttpRequest, HttpResponse, Responder, ResponseError};
-use futures::Future;
-
-use super::handler::{AuthData, LoggedUser};
-use crate::models::DbExecutor;
+use super::handler::{login_user, AuthData, LoggedUser};
 use super::utils::create_token;
-use crate::errors::ServiceError;
-
+use actix_identity::Identity;
+use actix_web::{web, Error, HttpResponse, Responder, ResponseError};
+use database::ConnectionPool;
+use futures::Future;
 
 pub fn login(
     auth_data: web::Json<AuthData>,
     id: Identity,
-    db: web::Data<Addr<DbExecutor>>,
+    pool: web::Data<ConnectionPool>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    db.send(auth_data.into_inner())
-        .from_err()
-        .and_then(move |res| match res {
-            Ok(user) => {
-                let jwt = create_token(&user)?;
-                id.remember(jwt);
-                Ok(HttpResponse::Ok().into())
-            }
-            Err(e) => Ok(e.error_response()),
-        })
+    web::block(move || login_user(pool, &auth_data.into_inner())).then(move |res| match res {
+        Ok(user) => {
+            let jwt = create_token(&user)?;
+            id.remember(jwt);
+            Ok(HttpResponse::Ok().into())
+        }
+        Err(e) => Ok(e.error_response()),
+    })
 }
 
 pub fn logout(id: Identity) -> impl Responder {

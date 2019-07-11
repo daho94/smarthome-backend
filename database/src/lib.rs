@@ -1,56 +1,73 @@
-#[macro_use]
-extern crate diesel;
-extern crate dotenv;
+extern crate openssl;
 
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate diesel; //toDo: Make this public
+#[macro_use]
+extern crate diesel_migrations;
+#[macro_use]
+extern crate serde_derive;
+
+pub mod actions;
 pub mod models;
 pub mod schema;
-pub mod actions;
 
-use self::models::post::{NewPost, Post};
-use self::models::user::{NewUser, User};
+// use self::models::post::{NewPost, Post};
 
 use diesel::prelude::*;
-use diesel::r2d2::{ConnectionManager, Pool};
-use dotenv::dotenv;
+use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
 use std::env;
 
 pub type PgConnectionPool = Pool<ConnectionManager<PgConnection>>;
 
-pub fn establish_connection() -> PgConnection {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
+#[derive(Clone)]
+pub struct ConnectionPool {
+    pool: PgConnectionPool,
 }
 
-pub fn create_connection_pool(database_url: &str) -> PgConnectionPool {
-    let manager = ConnectionManager::new(database_url);
-    Pool::builder()
-        .build(manager)
-        .expect("Failed to create connection pool")
+embed_migrations!("./migrations");
+
+impl Default for ConnectionPool {
+    fn default() -> Self {
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+        ConnectionPool::new(&database_url)
+    }
 }
 
-pub fn create_post(conn: &PgConnection, title: &str, body: &str) -> Post {
-    use schema::posts;
+impl ConnectionPool {
+    pub fn new(database_url: &str) -> Self {
+        let manager = ConnectionManager::<PgConnection>::new(database_url);
 
-    let new_post = NewPost {
-        title: title,
-        body: body,
-    };
+        let pool = Pool::builder()
+            .build(manager)
+            .expect("Failed creating database pool");
+        info!("Running pending migrations...");
+        let conn = (&pool).get().unwrap();
+        if let Err(e) = embedded_migrations::run_with_output(&conn, &mut std::io::stdout()) {
+            eprintln!(
+                "[DB:embedded_migrations] Error while running pending migrations: {}",
+                e
+            );
+        };
+        ConnectionPool { pool }
+    }
+    pub fn connection(&self) -> PooledConnection<ConnectionManager<PgConnection>> {
+        self.pool.get().unwrap()
+    }
+    pub fn ping(&self) -> bool {
+        let conn = self.connection();
+        diesel::sql_query(r#"SELECT 1"#).execute(&conn).is_ok()
+    }
+    // pub fn create_post(&self, title: &str, body: &str) -> Post {
+    //     use schema::posts;
 
-    diesel::insert_into(posts::table)
-        .values(&new_post)
-        .get_result(conn)
-        .expect("Error saving new post")
-}
+    //     let conn = self.connection();
+    //     let new_post = NewPost { title, body };
 
-pub fn create_user(conn: &PgConnection, username: &str, password: &str) -> User {
-    use schema::users;
-
-    let new_user = NewUser { username, password };
-
-    diesel::insert_into(users::table)
-        .values(&new_user)
-        .get_result(conn)
-        .expect("Error saving new user")
+    //     diesel::insert_into(posts::table)
+    //         .values(&new_post)
+    //         .get_result(&conn)
+    //         .expect("Error saving new post")
+    // }
 }

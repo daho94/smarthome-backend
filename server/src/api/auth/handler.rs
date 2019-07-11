@@ -1,14 +1,12 @@
-use actix::{Handler, Message};
-use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{middleware::identity::Identity, FromRequest};
-// use diesel::prelude::*;
-
-use crate::errors::ServiceError;
-use crate::models::{DbExecutor, SlimUser};
 use crate::api::auth::utils::decode_token;
-use database::actions::get_user;
-use djangohashers::{check_password};
-
+use crate::errors::ServiceError;
+use crate::models::SlimUser;
+use actix_web::web;
+use actix_web::{dev::Payload, Error, HttpRequest};
+use actix_web::FromRequest;
+use actix_identity::Identity;
+use database::ConnectionPool;
+use bcrypt::{verify};
 
 #[derive(Debug, Deserialize)]
 pub struct AuthData {
@@ -16,29 +14,20 @@ pub struct AuthData {
     pub password: String,
 }
 
-impl Message for AuthData {
-    type Result = Result<SlimUser, ServiceError>;
-}
-
-impl Handler<AuthData> for DbExecutor {
-    type Result = Result<SlimUser, ServiceError>;
-    fn handle(&mut self, msg: AuthData, _: &mut Self::Context) -> Self::Result {
-        let conn = &self.0.get().unwrap();
-
-        if let Ok(user) = get_user(conn, &msg.username) {
-            match check_password(&msg.password, &user.password) {
-                Ok(matching) => {
-                    if matching {
-                        return Ok(user.into());
-                    }
-                }
-                Err(_) => (), //HashError
+pub fn login_user(
+    pool: web::Data<ConnectionPool>,
+    auth_data: &AuthData,
+) -> Result<SlimUser, ServiceError> {
+    if let Ok(user) = pool.get_user(&auth_data.username) {
+        if let Ok(matching) = verify(&auth_data.password, &user.password) {
+            if matching {
+                return Ok(user.into());
             }
         }
-        Err(ServiceError::BadRequest(
-            "Username and Password don't match".into(),
-        ))
     }
+    Err(ServiceError::BadRequest(
+        "Username and Password don't match".into(),
+    ))
 }
 
 // we need the same data

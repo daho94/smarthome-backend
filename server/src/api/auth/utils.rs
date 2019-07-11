@@ -1,7 +1,7 @@
-use frank_jwt::{decode, encode, validate_signature, Algorithm};
-use chrono::{Duration, Local};
-use crate::models::{DbExecutor, SlimUser};
 use crate::errors::ServiceError;
+use crate::models::SlimUser;
+use chrono::{Duration, Local};
+use frank_jwt::{decode, encode, validate_signature, Algorithm};
 use serde_json::json;
 
 const ALGO: Algorithm = Algorithm::HS512;
@@ -15,6 +15,7 @@ pub fn create_token(user: &SlimUser) -> Result<String, ServiceError> {
     })
 }
 
+#[allow(dead_code)]
 pub fn validate_token(jwt: &str) -> Result<bool, ServiceError> {
     validate_signature(&jwt.to_string(), &get_secret(), ALGO).map_err(|e| {
         eprint!("{}", e);

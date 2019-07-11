@@ -1,11 +1,8 @@
-use crate::models::user::User;
-use diesel::prelude::*;
+pub mod category;
+pub mod dashboard;
+pub mod datapoint;
+pub mod ts_number;
+pub mod user;
+pub mod widget;
 
 pub type Result<T> = std::result::Result<T, diesel::result::Error>;
-
-
-pub fn get_user(conn: &PgConnection, name: &str) -> Result<User> {
-        use crate::schema::users::dsl::*;
-
-        users.filter(username.eq(name)).first::<User>(conn)
-    }

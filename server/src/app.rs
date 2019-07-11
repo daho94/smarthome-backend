@@ -1,40 +1,41 @@
+use crate::api::auth::routes::*;
+use crate::api::dashboard::routes::*;
+use crate::api::iobroker::routes::*;
+use crate::api::widget::routes::*;
 use actix_files as fs;
 use actix_web::web;
-use crate::api::auth::routes::{login, logout, get_me};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
-        web::scope("/api").service(
-            web::resource("/auth")
-                .route(web::post().to_async(login))
-                .route(web::delete().to(logout))
-                .route(web::get().to_async(get_me)),
-        )
+        web::scope("/api")
+            .service(
+                web::resource("/auth")
+                    .route(web::post().to_async(login))
+                    .route(web::delete().to(logout))
+                    .route(web::get().to_async(get_me)),
+            )
+            .service(web::resource("/iobroker").route(web::post().to_async(get_datapoints)))
+            .service(
+                web::scope("/iobroker")
+                    .service(
+                        web::resource("/datapoints").route(web::post().to_async(get_datapoints)),
+                    )
+                    .service(
+                        web::resource("/history")
+                            .route(web::post().to_async(get_datapoint_history_availability)),
+                    ),
+            )
+            .service(
+                web::scope("/dashboard")
+                    .service(web::resource("/all").route(web::get().to_async(get_dashboards)))
+                    .service(
+                        web::resource("/single")
+                            .route(web::post().to_async(get_dashboard))
+                            .route(web::get().to_async(get_default_dashboard))
+                            .route(web::put().to_async(save_dashboard)),
+                    ),
+            )
+            .service(web::resource("/widget/all").route(web::get().to_async(get_widgets))),
     )
-    //     .service(
-    //         web::scope("/releasenotes/{name}")
-    //             .service(
-    //                 web::resource("/versions")
-    //                     .route(web::get().to(releasenotes::get_versions)),
-    //             )
-    //             .service(
-    //                 web::resource("/issues")
-    //                     .route(web::get().to_async(releasenotes::get_issues)),
-    //             ),
-    //     )
-    //     .service(web::resource("/user").route(web::post().to_async(users::create_user)))
-    //     .service(web::resource("/group").route(web::post().to_async(groups::create_group)))
-    //     .service(
-    //         web::resource("/usergroup")
-    //             .route(web::post().to_async(usergroups::create_user_group_relation))
-    //             .route(web::get().to_async(usergroups::get_groups_for_user)),
-    //     ),
-    //     ),
-    // )
-    // .service(web::resource("/").route(web::get().to(|| {
-    //     HttpResponse::Found()
-    //         .header("LOCATION", "/index.html")
-    //         .finish()
-    // })))
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
 }

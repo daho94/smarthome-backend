@@ -7,12 +7,12 @@ edition = "2018"
 [dependencies]
 database = { path = "../database" }
 actix = { version = "0.8", features = ["http"] }
-actix-files = "0.1.0-beta.1"
+actix-files = "0.1.0-beta"
 actix-service = "0.4"
+actix-identity = "0.1"
 env_logger = "0.6"
 rustls = "0.15"
-listenfd = "0.3"
-actix-web = { version = "1.0.0-beta", features = ["rust-tls"] }
+actix-web = { version = "1.0.0-rc", features = ["rust-tls"] }
 dotenv = "0.14"
 frank_jwt = "3.1"
 serde_json = "1.0"
@@ -22,4 +22,5 @@ chrono = "0.4"
 derive_more = "0.14"
 futures = "0.1"
 diesel = "1.4"
-djangohashers = "1.0.1"
+openssl = { version="0.10", features = ["vendored"] }
+bcrypt = "0.4"
