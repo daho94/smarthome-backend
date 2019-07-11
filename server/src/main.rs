@@ -55,8 +55,7 @@ fn main() -> io::Result<()> {
             .configure(app::config)
     });
 
-
-    server.bind_rustls("127.0.0.1:3000", config)?.start();
+    server.bind_rustls("192.168.178.59:3000", config)?.start();
 
     sys.run()
 }
