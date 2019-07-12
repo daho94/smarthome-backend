@@ -23,13 +23,13 @@ impl ConnectionPool {
             .first::<Dashboard>(&conn)
     }
 
-    pub fn get_dashboards_for_user(&self, user: &User) -> Result<Vec<(i32, String, bool)>> {
+    pub fn get_dashboards_for_user(&self, user: &User) -> Result<Vec<(i32, String, bool, String)>> {
         use crate::schema::dashboards::dsl::*;
 
         let conn = self.connection();
         Dashboard::belonging_to(user)
-            .select((id, name, default_dashboard))
-            .load::<(i32, String, bool)>(&conn)
+            .select((id, name, default_dashboard, icon))
+            .load::<(i32, String, bool, String)>(&conn)
     }
 
     pub fn create_dashboard_for_user(
@@ -38,6 +38,7 @@ impl ConnectionPool {
         dashboard_name: &str,
         settings: &Value,
         is_default: bool,
+        icon: &str,
     ) -> Dashboard {
         use crate::schema::dashboards;
 
@@ -47,6 +48,7 @@ impl ConnectionPool {
             name: dashboard_name,
             default_dashboard: is_default,
             settings,
+            icon,
         };
 
         diesel::insert_into(dashboards::table)

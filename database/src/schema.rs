@@ -12,6 +12,7 @@ table! {
         name -> Varchar,
         default_dashboard -> Bool,
         settings -> Jsonb,
+        icon -> Varchar,
     }
 }
 
