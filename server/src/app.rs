@@ -33,6 +33,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                             .route(web::post().to_async(get_dashboard))
                             .route(web::get().to_async(get_default_dashboard))
                             .route(web::put().to_async(save_dashboard)),
+                    )
+                    .service(
+                        web::resource("/create").route(web::post().to_async(create_dashboard)),
                     ),
             )
             .service(web::resource("/widget/all").route(web::get().to_async(get_widgets))),
