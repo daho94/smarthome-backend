@@ -11,6 +11,7 @@ pub struct Dashboard {
     pub name: String,
     pub default_dashboard: bool,
     pub settings: Value,
+    pub icon: String,
 }
 
 #[derive(Insertable, Debug)]
@@ -20,4 +21,5 @@ pub struct NewDashboard<'a> {
     pub name: &'a str,
     pub default_dashboard: bool,
     pub settings: &'a Value,
+    pub icon: &'a str,
 }

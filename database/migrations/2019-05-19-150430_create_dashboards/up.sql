@@ -3,5 +3,6 @@ CREATE TABLE dashboards (
   user_id SERIAL references users(id) NOT NULL,
   name VARCHAR NOT NULL,
   default_dashboard Boolean NOT NULL,
-  settings JSONB NOT NULL
+  settings JSONB NOT NULL,
+  icon VARCHAR NOT NULL
 )
