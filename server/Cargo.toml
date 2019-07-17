@@ -27,4 +27,4 @@ bcrypt = "0.4"
 funksteckdose = { version = "0.1.0", optional = true, features = ["wiringpi"] }
 
 [features]
-default = []
+wiring-pi = ["funksteckdose"]

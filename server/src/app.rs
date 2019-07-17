@@ -2,11 +2,11 @@ use crate::api::auth::routes::*;
 use crate::api::dashboard::routes::*;
 use crate::api::iobroker::routes::*;
 use crate::api::widget::routes::*;
+use crate::api::socket::routes::*;
 use actix_files as fs;
 use actix_web::web;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
-    // configure default routes
     cfg.service(
         web::scope("/api")
             .service(
@@ -39,18 +39,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                         web::resource("/create").route(web::post().to_async(create_dashboard)),
                     ),
             )
-            .service(web::resource("/widget/all").route(web::get().to_async(get_widgets))),
+            .service(web::resource("/widget/all").route(web::get().to_async(get_widgets)))
+            .service(web::resource("/socket").route(web::post().to(control_socket)))
     )
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
-
-    // configure feature based routes
-    #[cfg(feature = "funksteckdose")]
-    enable_socket_control(&mut cfg);
-}
-
-#[cfg(feature = "funksteckdose")]
-fn enable_socket_control(cfg: &mut web::ServiceConfig) {
-    use crate::api::socket::routes::*;
-
-    cfg.service(web::resource("/api/socket").route(web::post().to(control_socket)));
 }
