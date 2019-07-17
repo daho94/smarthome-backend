@@ -22,5 +22,9 @@ chrono = "0.4"
 derive_more = "0.14"
 futures = "0.1"
 diesel = "1.4"
-openssl = { version="0.10", features = ["vendored"] }
+openssl = { version= "0.10", features = ["vendored"] }
 bcrypt = "0.4"
+funksteckdose = { version = "0.1.0", optional = true, features = ["wiringpi"] }
+
+[features]
+default = []
