@@ -11,6 +11,7 @@ pub fn control_socket(_logged_user: LoggedUser, args: web::Json<ControlArgs>) ->
 }
 
 // not supported on device non-raspberrypi devices
+#[cfg(not(feature = "wiring-pi"))]
 pub fn control_socket(_logged_user: LoggedUser) -> impl Responder {
     HttpResponse:: ServiceUnavailable()
 }
