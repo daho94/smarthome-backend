@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "database",
-    "server"
+    "server",
+    "hyperion-rs"
 ]
 
 [profile.release]
