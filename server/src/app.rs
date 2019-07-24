@@ -1,8 +1,8 @@
 use crate::api::auth::routes::*;
 use crate::api::dashboard::routes::*;
 use crate::api::iobroker::routes::*;
-use crate::api::widget::routes::*;
 use crate::api::socket::routes::*;
+use crate::api::widget::routes::*;
 use actix_files as fs;
 use actix_web::web;
 
@@ -33,14 +33,15 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                         web::resource("/single")
                             .route(web::post().to_async(get_dashboard))
                             .route(web::get().to_async(get_default_dashboard))
-                            .route(web::put().to_async(save_dashboard)),
+                            .route(web::put().to_async(save_dashboard))
+                            .route(web::delete().to_async(delete_dashboard)),
                     )
                     .service(
                         web::resource("/create").route(web::post().to_async(create_dashboard)),
                     ),
             )
             .service(web::resource("/widget/all").route(web::get().to_async(get_widgets)))
-            .service(web::resource("/socket").route(web::post().to(control_socket)))
+            .service(web::resource("/socket").route(web::post().to(control_socket))),
     )
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
 }
