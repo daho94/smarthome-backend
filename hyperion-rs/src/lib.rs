@@ -117,7 +117,7 @@ impl Hyperion {
         }
     }
 
-    pub fn list_effects(&self) -> Result<(), IOError> {
+    pub fn get_effects(&self) -> Option<Vec<String>> {
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Serialize, Deserialize)]
@@ -128,14 +128,14 @@ impl Hyperion {
         let server_info = self
             .get_serverinfo()
             .expect("Could not get current serverinfo");
+
         if let Ok(effects) =
             serde_json::from_str::<Vec<Effect>>(&server_info["info"]["effects"].to_string())
         {
-            println!("-----Available effects-----");
-            effects.iter().for_each(|e| println!("{}", e.name));
+            Some(effects.into_iter().map(|e| e.name).collect())
+        } else {
+            None
         }
-
-        Ok(())
     }
 
     fn parse_color_components(&self) -> Option<Srgb> {

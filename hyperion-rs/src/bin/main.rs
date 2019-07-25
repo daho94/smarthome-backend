@@ -85,7 +85,15 @@ impl Command {
                 use crate::Effect::*;
                 match option {
                     Set { name } => hyperion.set_effect(&name),
-                    List => hyperion.list_effects(),
+                    List => {
+                        if let Some(effects) = hyperion.get_effects()
+                        {
+                            println!("-----Available effects-----");
+                            effects.iter().for_each(|e| println!("{}", e));
+                        }
+
+                        Ok(())                        
+                    },
                 }
             }
             ClearAll => hyperion.clear_all(),

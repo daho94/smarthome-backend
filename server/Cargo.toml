@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 database = { path = "../database" }
+hyperion-rs = { path = "../hyperion-rs" }
 actix = { version = "0.8", features = ["http"] }
 actix-files = "0.1.0-beta"
 actix-service = "0.4"

@@ -1,5 +1,6 @@
 use crate::api::auth::routes::*;
 use crate::api::dashboard::routes::*;
+use crate::api::hyperion::routes as hyperion;
 use crate::api::iobroker::routes::*;
 use crate::api::socket::routes::*;
 use crate::api::widget::routes::*;
@@ -25,6 +26,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                         web::resource("/history")
                             .route(web::post().to_async(get_datapoint_history_availability)),
                     ),
+            )
+            .service(
+                web::scope("/hyperion").service(
+                    web::resource("/command").route(web::post().to(hyperion::send_command)),
+                ),
             )
             .service(
                 web::scope("/dashboard")
