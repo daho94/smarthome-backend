@@ -1,6 +1,6 @@
 use super::handler::{
-    create_dashboard_for_user, get_dashboard_by_id, get_dashboards_for_user,
-    get_default_dashboard_for_user, save_dashboard_for_user,
+    create_dashboard_for_user, delete_dashboard_by_id, get_dashboard_by_id,
+    get_dashboards_for_user, get_default_dashboard_for_user, save_dashboard_for_user,
 };
 use super::handler::{CreateDashboard, DashboardData, DashboardSettings};
 use crate::api::auth::handler::LoggedUser;
@@ -65,6 +65,17 @@ pub fn create_dashboard(
         create_dashboard_for_user(pool, &dashboard_data.into_inner(), &logged_user.username)
     })
     .then(|res| match res {
+        Ok(_) => Ok(HttpResponse::Ok().into()),
+        Err(e) => Ok(e.error_response()),
+    })
+}
+
+pub fn delete_dashboard(
+    _logged_user: LoggedUser,
+    dashboard_data: web::Json<DashboardData>,
+    pool: web::Data<ConnectionPool>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+    web::block(move || delete_dashboard_by_id(pool, dashboard_data.id)).then(|res| match res {
         Ok(_) => Ok(HttpResponse::Ok().into()),
         Err(e) => Ok(e.error_response()),
     })

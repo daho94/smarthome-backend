@@ -1,0 +1,20 @@
+[package]
+name = "hyperion-rs"
+version = "0.1.0"
+authors = ["Daniel <danielholzner@gmx.de>"]
+edition = "2018"
+
+[lib]
+name = "hyperion_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "hyperion_rs"
+path = "src/bin/main.rs"
+doc = false
+
+[dependencies]
+palette = "0.4.1"
+serde_json = "1.0"
+structopt = "0.2"
+serde = { version = "1.0", features = ["derive"] }

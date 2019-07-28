@@ -20,7 +20,7 @@ pub fn has_datapoint_history(
         Ok(_) => true,
         Err(_) => false,
     };
-    
+
     Ok(HistoryAvailability {
         has_history: availability,
     })

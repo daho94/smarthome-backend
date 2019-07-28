@@ -76,6 +76,13 @@ pub fn get_dashboard_by_id(
         .and_then(|user| pool.get_dashboard_for_user(dashboard_id, &user))
 }
 
+pub fn delete_dashboard_by_id(
+    pool: web::Data<ConnectionPool>,
+    dashboard_id: i32,
+) -> Result<usize, Error> {
+    Ok(pool.delete_dashboard_by_id(dashboard_id))
+}
+
 pub fn get_default_dashboard_for_user(
     pool: web::Data<ConnectionPool>,
     username: &str,

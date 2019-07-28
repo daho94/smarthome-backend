@@ -77,4 +77,14 @@ impl ConnectionPool {
         .get_result(&conn)
         .expect("Error updating dashboard")
     }
+
+    pub fn delete_dashboard_by_id(&self, dashboard_id: i32) -> usize {
+        use crate::schema::dashboards::dsl::*;
+
+        let conn = self.connection();
+
+        diesel::delete(dashboards.filter(id.eq(dashboard_id)))
+            .execute(&conn)
+            .expect("Could not delete dashboard")
+    }
 }
