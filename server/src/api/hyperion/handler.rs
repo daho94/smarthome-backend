@@ -10,3 +10,8 @@ pub enum Command {
     Color { r: u8, g: u8, b: u8 },
     Effect { name: String },
 }
+
+#[derive(Debug, Deserialize)]
+pub struct HyperionCmdAddr {
+    pub address: String,
+}

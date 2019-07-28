@@ -1,22 +1,21 @@
-use super::handler::{Command, HyperionCmd};
+use super::handler::{Command, HyperionCmd, HyperionCmdAddr};
 use crate::api::auth::handler::LoggedUser;
 use crate::errors::ServiceError::InternalServerError;
 use actix_web::{web, HttpResponse, Responder, ResponseError};
 use hyperion_rs::palette::{Component, Srgb};
 use hyperion_rs::Hyperion;
+use serde_json::json;
 
-pub fn set_effect(_logged_user: LoggedUser) -> impl Responder {
-    unimplemented!()
+pub fn get_effects(_logged_user: LoggedUser, args: web::Json<HyperionCmdAddr>) -> impl Responder {
+    let cmd = args.into_inner();
+    let hyperion = Hyperion::new(&cmd.address);
+
+    if let Some(effects) = hyperion.get_effects() {
+        HttpResponse::Ok().json(json!({ "effects": effects }))
+    } else {
+        InternalServerError.error_response()
+    }
 }
-
-pub fn get_effects(_logged_user: LoggedUser) -> impl Responder {
-    unimplemented!()
-}
-
-pub fn set_color(_logged_user: LoggedUser) -> impl Responder {
-    unimplemented!()
-}
-
 pub fn send_command(_logged_user: LoggedUser, args: web::Json<HyperionCmd>) -> impl Responder {
     let cmd = args.into_inner();
     let hyperion = Hyperion::new(&cmd.address);
@@ -35,6 +34,12 @@ pub fn send_command(_logged_user: LoggedUser, args: web::Json<HyperionCmd>) -> i
     }
 }
 
-pub fn clear_all(_logged_user: LoggedUser) -> impl Responder {
-    unimplemented!()
+pub fn clear_all(_logged_user: LoggedUser, args: web::Json<HyperionCmdAddr>) -> impl Responder {
+    let cmd = args.into_inner();
+    let hyperion = Hyperion::new(&cmd.address);
+
+    match hyperion.clear_all() {
+        Ok(_) => HttpResponse::Ok().into(),
+        Err(_) => InternalServerError.error_response(),
+    }
 }
