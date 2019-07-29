@@ -1,4 +1,5 @@
 use funksteckdose::{wiringpi::WiringPiPin, Device, EncodingA, Protocol1, State};
+use std::str::FromStr;
 
 #[derive(Debug, Deserialize)]
 pub struct ControlArgs {
