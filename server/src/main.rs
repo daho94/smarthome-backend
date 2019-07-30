@@ -16,7 +16,6 @@ use std::{env, io};
 mod api;
 mod errors;
 
-
 #[cfg(feature = "rust-tls")]
 fn main() -> io::Result<()> {
     // setup env
@@ -27,18 +26,22 @@ fn main() -> io::Result<()> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     // create connection pool
-    let pool = ConnectionPool::new(&database_url);   
+    let pool = ConnectionPool::new(&database_url);
 
     // load ssl keys
-     use rustls::{
+    use rustls::{
         internal::pemfile::{certs, rsa_private_keys},
         NoClientAuth, ServerConfig,
     };
     use std::fs::File;
 
     let mut config = ServerConfig::new(NoClientAuth::new());
-    let cert_file = &mut io::BufReader::new(File::open("cert/invalid.cer").unwrap());
-    let key_file = &mut io::BufReader::new(File::open("cert/invalid.key").unwrap());
+    let cert_file = &mut io::BufReader::new(
+        File::open(env::var("CERT_FILE").unwrap_or("cert/invalid.cer".to_string())).unwrap(),
+    );
+    let key_file = &mut io::BufReader::new(
+        File::open(env::var("KEY_FILE").unwrap_or("cert/invalid.key".to_string())).unwrap(),
+    );
     let cert_chain = certs(cert_file).unwrap();
     let mut keys = rsa_private_keys(key_file).unwrap();
     config.set_single_cert(cert_chain, keys.remove(0)).unwrap();
@@ -75,7 +78,7 @@ fn main() -> io::Result<()> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     // create connection pool
-    let pool = ConnectionPool::new(&database_url);    
+    let pool = ConnectionPool::new(&database_url);
 
     // create server
     let server = HttpServer::new(move || {
