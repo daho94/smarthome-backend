@@ -165,7 +165,10 @@ impl Hyperion {
     }
 
     fn create_stream(&self) -> Result<TcpStream, IOError> {
-        let stream = TcpStream::connect(&self.socket_adr)?;
+        let stream = TcpStream::connect_timeout(
+            &self.socket_adr.parse().unwrap(),
+            Duration::from_millis(5000),
+        )?;
         Ok(stream)
     }
 }
