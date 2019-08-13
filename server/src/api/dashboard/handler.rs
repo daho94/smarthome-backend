@@ -8,6 +8,7 @@ use serde_json::Value;
 pub struct CreateDashboard {
     pub name: String,
     pub icon: String,
+    pub is_default: bool,
 }
 
 pub fn create_dashboard_for_user(
@@ -19,7 +20,13 @@ pub fn create_dashboard_for_user(
         let settings = r#"[]"#;
         let settings: Value = serde_json::from_str(settings).expect("Failed to parse JSON input");
         Ok(pool
-            .create_dashboard_for_user(&user, &dashboard.name, &settings, false, &dashboard.icon)
+            .create_dashboard_for_user(
+                &user,
+                &dashboard.name,
+                &settings,
+                dashboard.is_default,
+                &dashboard.icon,
+            )
             .into())
     })
 }
