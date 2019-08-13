@@ -6,3 +6,5 @@
 /database/target
 /server/.env
 /database/.env
+
+hyperion-rs/target/
