@@ -4,6 +4,7 @@ use crate::api::hyperion::routes as hyperion;
 use crate::api::iobroker::routes as iobroker;
 use crate::api::socket::routes as socket;
 use crate::api::widget::routes as widget;
+use crate::api::file::routes as file;
 use actix_files as fs;
 use actix_web::web;
 
@@ -54,7 +55,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                     ),
             )
             .service(web::resource("/widget/all").route(web::get().to_async(widget::get_widgets)))
-            .service(web::resource("/socket").route(web::post().to(socket::control_socket))),
+            .service(web::resource("/socket").route(web::post().to(socket::control_socket)))
+            .service(web::resource("/file").route(web::post().to_async(file::upload)))
     )
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
 }
