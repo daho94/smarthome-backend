@@ -2,19 +2,42 @@ use actix_multipart::{Field, MultipartError};
 use actix_web::{error, web, Error};
 use futures::future::{err, Either};
 use futures::{Future, Stream};
-
 use std::fs;
-use std::io::Write;
+use std::io::{copy, Write};
+use std::path::Path;
 
+#[derive(Debug, Deserialize)]
+pub struct FileDownload {
+    uri: String,
+    file_name: String,
+}
+
+//FIXME: check if file already exists? check if dir exists
+pub fn download_file_from_uri(file: &FileDownload) {
+    let mut response = reqwest::blocking::get(&file.uri).expect("Request failed");
+    let mut out =
+        fs::File::create(format!("web/upload/{}", file.file_name)).expect("faield to create file");
+    copy(&mut response, &mut out).expect("failed to copy content");
+}
+
+//FIXME: Decide where to upload files
 pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
     let file_path_string = format!(
-        "web/img/{}",
+        "web/upload/{}",
         field
             .content_disposition()
             .expect("Failed to parse file")
             .get_filename()
             .expect("Failed to parse file")
     );
+
+    if Path::new("web/upload/").is_dir() == false {
+        match fs::create_dir("web/upload") {
+            Ok(()) => { /* it worked */ }
+            Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
+        }
+    }
+
     let file = match fs::File::create(file_path_string) {
         Ok(file) => file,
         Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
