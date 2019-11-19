@@ -1,13 +1,20 @@
 use actix_multipart::{Field, MultipartError};
-use actix_web::{error, Error,web};
+use actix_web::{error, web, Error};
 use futures::future::{err, Either};
 use futures::{Future, Stream};
 
 use std::fs;
 use std::io::Write;
 
-pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error>{
-    let file_path_string = format!("web/img/{}",field.content_disposition().expect("Failed to parse file").get_filename().expect("Failed to parse file"));
+pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
+    let file_path_string = format!(
+        "web/img/{}",
+        field
+            .content_disposition()
+            .expect("Failed to parse file")
+            .get_filename()
+            .expect("Failed to parse file")
+    );
     let file = match fs::File::create(file_path_string) {
         Ok(file) => file,
         Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
@@ -26,12 +33,10 @@ pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error>{
                     acc += bytes.len() as i64;
                     Ok((file, acc))
                 })
-                    .map_err(|e: error::BlockingError<MultipartError>| {
-                        match e {
-                            error::BlockingError::Error(e) => e,
-                            error::BlockingError::Canceled => MultipartError::Incomplete,
-                        }
-                    })
+                .map_err(|e: error::BlockingError<MultipartError>| match e {
+                    error::BlockingError::Error(e) => e,
+                    error::BlockingError::Canceled => MultipartError::Incomplete,
+                })
             })
             .map(|(_, acc)| acc)
             .map_err(|e| {
