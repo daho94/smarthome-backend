@@ -3,6 +3,7 @@ use crate::api::auth::handler::LoggedUser;
 use actix_multipart::Multipart;
 use actix_web::{error, web, Error, HttpResponse, Responder};
 use futures::{Future, Stream};
+use serde_json::json;
 
 pub fn upload(
     multipart: Multipart,
@@ -22,8 +23,8 @@ pub fn upload(
 
 pub fn upload_from_uri(args: web::Json<FileDownload>, _logged_user: LoggedUser) -> impl Responder {
     let args = args.into_inner();
-    download_file_from_uri(&args);
-    //Ok(_) => HttpResponse::Ok().into(),
-    //Err(_) => InternalServerError.error_response(),
-    HttpResponse::Ok()
+    match download_file_from_uri(&args) {
+        Ok(sizes) => HttpResponse::Ok().json(sizes),
+        Err(e) => HttpResponse::Ok().json(json!({ "message": e })),
+    }
 }

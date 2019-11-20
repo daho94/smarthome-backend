@@ -3,8 +3,17 @@ use actix_web::{error, web, Error};
 use futures::future::{err, Either};
 use futures::{Future, Stream};
 use std::fs;
-use std::io::{copy, Write};
+use std::io::{self, copy, Write};
 use std::path::Path;
+
+const UPLOAD_DIR: &str = "web/upload/";
+
+fn try_create_upload_dir() -> io::Result<()> {
+    if !Path::new(UPLOAD_DIR).is_dir() {
+        fs::create_dir(UPLOAD_DIR)?
+    }
+    Ok(())
+}
 
 #[derive(Debug, Deserialize)]
 pub struct FileDownload {
@@ -12,18 +21,30 @@ pub struct FileDownload {
     file_name: String,
 }
 
-//FIXME: check if file already exists? check if dir exists
-pub fn download_file_from_uri(file: &FileDownload) {
-    let mut response = reqwest::blocking::get(&file.uri).expect("Request failed");
-    let mut out =
-        fs::File::create(format!("web/upload/{}", file.file_name)).expect("faield to create file");
-    copy(&mut response, &mut out).expect("failed to copy content");
+fn is_file_already_existent(path: &Path) -> bool {
+    Path::new(path).exists()
 }
 
-//FIXME: Decide where to upload files
+pub fn download_file_from_uri(file: &FileDownload) -> Result<u64, &'static str> {
+    let mut response = reqwest::blocking::get(&file.uri).unwrap();
+
+    if try_create_upload_dir().is_err() {
+        return Err("Failed to create upload directory");
+    }
+
+    if is_file_already_existent(Path::new(&format!("{}{}", UPLOAD_DIR, file.file_name))) {
+        return Ok(0);
+    }
+
+    fs::File::create(format!("{}{}", UPLOAD_DIR, file.file_name))
+        .and_then(|mut out| copy(&mut response, &mut out))
+        .map_err(|_| "Failed to write file")
+}
+
 pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
     let file_path_string = format!(
-        "web/upload/{}",
+        "{}{}",
+        UPLOAD_DIR,
         field
             .content_disposition()
             .expect("Failed to parse file")
@@ -31,11 +52,8 @@ pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
             .expect("Failed to parse file")
     );
 
-    if Path::new("web/upload/").is_dir() == false {
-        match fs::create_dir("web/upload") {
-            Ok(()) => { /* it worked */ }
-            Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
-        }
+    if let Err(e) = try_create_upload_dir() {
+        return Either::A(err(error::ErrorInternalServerError(e)));
     }
 
     let file = match fs::File::create(file_path_string) {
