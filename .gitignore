@@ -8,3 +8,5 @@
 /database/.env
 
 hyperion-rs/target/
+
+.idea/

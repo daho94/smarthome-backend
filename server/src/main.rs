@@ -1,7 +1,7 @@
 extern crate actix;
 #[macro_use]
 extern crate serde_derive;
-
+extern crate reqwest;
 mod app;
 mod models;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
