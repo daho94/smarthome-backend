@@ -86,3 +86,48 @@ pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
             }),
     )
 }
+
+#[derive(Serialize)]
+pub struct FileUploaded {
+    name: String,
+    path: String,
+}
+
+impl FileUploaded {
+    fn new(name: String, path: String) -> Self {
+        Self { name, path }
+    }
+}
+
+pub fn get_files() -> io::Result<Vec<FileUploaded>> {
+    let mut file_list = Vec::new();
+
+    if Path::new(UPLOAD_DIR).is_dir() {
+        if let Ok(entries) = fs::read_dir(UPLOAD_DIR) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
+
+                    match path.extension().unwrap().to_str().unwrap() {
+                        "jpeg" | "jpe" | "jpg" | "gif" | "png" | "webp" => {
+                            file_list.push(FileUploaded::new(
+                                entry.file_name().into_string().unwrap(),
+                                entry
+                                    .path()
+                                    .strip_prefix("web")
+                                    .unwrap()
+                                    .to_owned()
+                                    .into_os_string()
+                                    .into_string()
+                                    .unwrap(),
+                            ));
+                        }
+                        _ => {}
+                    };
+                }
+            }
+        }
+    }
+
+    Ok(file_list)
+}

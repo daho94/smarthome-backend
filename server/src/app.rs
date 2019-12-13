@@ -58,6 +58,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .service(web::resource("/socket").route(web::post().to(socket::control_socket)))
             .service(
                 web::scope("/upload")
+                    .service(web::resource("/files").route(web::get().to(file::get_uploaded_files)))
                     .service(web::resource("/file").route(web::post().to_async(file::upload)))
                     .service(web::resource("/uri").route(web::post().to(file::upload_from_uri))),
             ),
