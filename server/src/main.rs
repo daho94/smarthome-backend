@@ -91,7 +91,7 @@ fn main() -> io::Result<()> {
                 CookieIdentityPolicy::new(secret.as_bytes())
                     .name("auth")
                     .path("/")
-                    .max_age(Duration::weeks(1).num_seconds())
+                    .max_age(Duration::weeks(4).num_seconds())
                     .secure(false),
             ))
             .configure(app::config)

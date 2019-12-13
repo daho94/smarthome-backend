@@ -10,3 +10,5 @@
 hyperion-rs/target/
 
 .idea/
+
+server/upload/
