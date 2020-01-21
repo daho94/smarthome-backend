@@ -1,3 +1,4 @@
+pub use database::actions::dashboard_folder::Tree;
 pub use database::models::dashboard::Dashboard;
 use database::models::user::User;
 
