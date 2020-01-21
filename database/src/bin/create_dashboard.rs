@@ -15,6 +15,7 @@ fn main() {
     let mut dashboard_name = String::new();
     let mut is_default = String::new();
     let mut icon = String::new();
+    let mut dashboard_folder_id = String::new();
 
     println!("Enter username");
     stdin().read_line(&mut username).unwrap();
@@ -27,6 +28,10 @@ fn main() {
     println!("Enter icon name");
     stdin().read_line(&mut icon).unwrap();
     let icon = icon.trim_end();
+
+    println!("Enter dashboard folder id");
+    stdin().read_line(&mut dashboard_folder_id).unwrap();
+    let dashboard_folder_id: i32 = dashboard_folder_id.trim_end().parse().unwrap();
 
     println!("Should this dashboard be your default dashboard? (y/n)");
     stdin().read_line(&mut is_default).unwrap();
@@ -47,6 +52,7 @@ fn main() {
             &settings,
             is_default,
             &icon,
+            dashboard_folder_id,
         );
         println!(
             "Saved new dashboard with name {} and id {}",
