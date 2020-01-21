@@ -1,6 +1,7 @@
 CREATE TABLE dashboard_folders (
 	id SERIAL PRIMARY KEY,
 	parent_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
 	name VARCHAR NOT NULL,
 	icon VARCHAR NOT NULL
 )

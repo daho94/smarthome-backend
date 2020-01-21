@@ -1,36 +1,40 @@
 use crate::actions::Result;
 use crate::models::{dashboard_folder::*, user::User};
+use crate::schema::dashboard_folders;
+use crate::schema::dashboards;
+use crate::schema::users;
 use crate::ConnectionPool;
 use diesel::prelude::*;
 
 impl ConnectionPool {
-    pub fn get_folder_tree(&self, user: &User) -> Result<Tree> {
-        use crate::schema::dashboard_folders;
-        use crate::schema::dashboards;
-        use crate::schema::users;
+    pub fn create_folder(
+        &self,
+        name: &str,
+        parent_id: i32,
+        icon: &str,
+        user: &User,
+    ) -> DashboardFolder {
+        let conn = self.connection();
+        let new_folder = NewDashboardFolder {
+            name,
+            parent_id,
+            user_id: user.id,
+            icon,
+        };
 
+        diesel::insert_into(dashboard_folders::table)
+            .values(&new_folder)
+            .get_result(&conn)
+            .expect("Error saving new folder")
+    }
+
+    pub fn get_folder_tree(&self, user: &User) -> Result<Tree> {
         let conn = self.connection();
 
-        let folders: Vec<DashboardFolder> = dashboards::dsl::dashboards
-            .inner_join(users::dsl::users)
-            .inner_join(dashboard_folders::dsl::dashboard_folders)
-            .select((
-                dashboard_folders::id,
-                dashboard_folders::parent_id,
-                dashboard_folders::name,
-                dashboard_folders::icon,
-            ))
-            .distinct()
-            .filter(dashboards::user_id.eq(user.id))
-            .load::<(i32, i32, String, String)>(&conn)?
-            .iter()
-            .map(|row| DashboardFolder {
-                id: row.0,
-                parent_id: row.1,
-                name: row.2.to_owned(),
-                icon: row.3.to_owned(),
-            })
-            .collect();
+        let folders: Vec<DashboardFolder> = DashboardFolder::belonging_to(user)
+            .filter(dashboard_folders::user_id.eq(user.id))
+            .load::<DashboardFolder>(&conn)?;
+
         let root = folders
             .iter()
             .find(|f| f.name == "root")
@@ -38,6 +42,7 @@ impl ConnectionPool {
         let mut tree = Tree::Folder {
             name: root.name.to_owned(),
             id: root.id,
+            parent_id: root.parent_id,
             children: Vec::new(),
         };
 
@@ -52,6 +57,7 @@ pub enum Tree {
     Folder {
         name: String,
         id: i32,
+        parent_id: i32,
         children: Vec<Tree>,
     },
 }
@@ -63,6 +69,7 @@ fn build_tree(tree: &mut Tree, root: &DashboardFolder, folders: &[DashboardFolde
         let mut sub_tree = Tree::Folder {
             name: child.name.to_owned(),
             id: child.id,
+            parent_id: child.parent_id,
             children: Vec::new(),
         };
         build_tree(&mut sub_tree, &child, folders);

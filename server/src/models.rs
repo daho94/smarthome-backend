@@ -1,5 +1,6 @@
 pub use database::actions::dashboard_folder::Tree;
 pub use database::models::dashboard::Dashboard;
+pub use database::models::dashboard_folder::DashboardFolder;
 use database::models::user::User;
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -9,6 +9,7 @@ table! {
     dashboard_folders (id) {
         id -> Int4,
         parent_id -> Int4,
+        user_id -> Int4,
         name -> Varchar,
         icon -> Varchar,
     }
@@ -94,6 +95,7 @@ table! {
 }
 
 joinable!(dashboards -> users (user_id));
+joinable!(dashboard_folders -> users (user_id));
 joinable!(widgets -> categories (category_id));
 joinable!(dashboards -> dashboard_folders (dashboard_folder_id));
 
