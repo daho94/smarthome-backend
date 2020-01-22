@@ -24,5 +24,7 @@ fn main() {
         &username,
         &hash(password, DEFAULT_COST).expect("Couldn't hash passord"),
     );
+    // Create root folder
+    connection_pool.create_folder(&"root".to_string(), -1, &"folder".to_string(), &user);
     println!("\nSaved user {} with id {}", username, user.id);
 }
