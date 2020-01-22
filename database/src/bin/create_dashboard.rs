@@ -1,5 +1,3 @@
-use crate::models::dashboard::Dashboard;
-use crate::models::user::User;
 use crate::ConnectionPool;
 use database::*;
 use dotenv::dotenv;

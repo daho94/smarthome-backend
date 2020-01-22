@@ -1,8 +1,6 @@
 use crate::actions::Result;
 use crate::models::{dashboard_folder::*, user::User};
 use crate::schema::dashboard_folders;
-use crate::schema::dashboards;
-use crate::schema::users;
 use crate::ConnectionPool;
 use diesel::prelude::*;
 
