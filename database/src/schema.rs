@@ -6,6 +6,16 @@ table! {
 }
 
 table! {
+    dashboard_folders (id) {
+        id -> Int4,
+        parent_id -> Int4,
+        user_id -> Int4,
+        name -> Varchar,
+        icon -> Varchar,
+    }
+}
+
+table! {
     dashboards (id) {
         id -> Int4,
         user_id -> Int4,
@@ -13,15 +23,56 @@ table! {
         default_dashboard -> Bool,
         settings -> Jsonb,
         icon -> Varchar,
+        dashboard_folder_id -> Int4,
     }
 }
 
 table! {
-    posts (id) {
+    datapoints (id) {
         id -> Int4,
-        title -> Varchar,
-        body -> Text,
-        published -> Bool,
+        name -> Text,
+        #[sql_name = "type"]
+        type_ -> Int4,
+    }
+}
+
+table! {
+    sources (id) {
+        id -> Int4,
+        name -> Nullable<Text>,
+    }
+}
+
+table! {
+    ts_bool (id, ts) {
+        id -> Int4,
+        ts -> Int8,
+        val -> Nullable<Bool>,
+        ack -> Nullable<Bool>,
+        _from -> Nullable<Int4>,
+        q -> Nullable<Int4>,
+    }
+}
+
+table! {
+    ts_number (id, ts) {
+        id -> Int4,
+        ts -> Int8,
+        val -> Float4,
+        ack -> Nullable<Bool>,
+        _from -> Nullable<Int4>,
+        q -> Nullable<Int4>,
+    }
+}
+
+table! {
+    ts_string (id, ts) {
+        id -> Int4,
+        ts -> Int8,
+        val -> Nullable<Text>,
+        ack -> Nullable<Bool>,
+        _from -> Nullable<Int4>,
+        q -> Nullable<Int4>,
     }
 }
 
@@ -43,28 +94,20 @@ table! {
     }
 }
 
-table! {
-    datapoints (id) {
-        id -> Int4,
-        name -> Varchar,
-        #[sql_name = "type"]
-        data_type -> Int4,
-    }
-}
-
-table! {
-    ts_number (id) {
-        id -> Int4,
-        ts -> BigInt,
-        val -> Float4,
-        ack -> Bool,
-        _from -> Int4,
-        q -> Int4,
-    }
-}
-
 joinable!(dashboards -> users (user_id));
+joinable!(dashboard_folders -> users (user_id));
 joinable!(widgets -> categories (category_id));
+joinable!(dashboards -> dashboard_folders (dashboard_folder_id));
 
-allow_tables_to_appear_in_same_query!(categories, dashboards, posts, users, widgets,);
-allow_tables_to_appear_in_same_query!(datapoints, ts_number,);
+allow_tables_to_appear_in_same_query!(
+    categories,
+    dashboard_folders,
+    dashboards,
+    datapoints,
+    sources,
+    ts_bool,
+    ts_number,
+    ts_string,
+    users,
+    widgets,
+);

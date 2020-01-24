@@ -1,5 +1,6 @@
 use crate::api::auth::routes as auth;
 use crate::api::dashboard::routes as dashboard;
+use crate::api::dashboard_folder::routes as folder;
 use crate::api::file::routes as file;
 use crate::api::hyperion::routes as hyperion;
 use crate::api::iobroker::routes as iobroker;
@@ -61,6 +62,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                     .service(web::resource("/files").route(web::get().to(file::get_uploaded_files)))
                     .service(web::resource("/file").route(web::post().to_async(file::upload)))
                     .service(web::resource("/uri").route(web::post().to(file::upload_from_uri))),
+            )
+            .service(
+                web::resource("/folder")
+                    .route(web::get().to_async(folder::get_folder_tree))
+                    .route(web::post().to_async(folder::create_new_folder)),
             ),
     )
     .service(fs::Files::new("/", "./web/").index_file("index.html"));
